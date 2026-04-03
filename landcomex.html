@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LandComex — El costo real de importar, en segundos</title>
+<meta name="description" content="Calculadora de landed cost para importadores argentinos. Ingresás NCM, origen y FOB. Te devolvemos todos los tributos desglosados con valores del día.">
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:    #090C0A;
+  --bg2:   #0F1310;
+  --bg3:   #121619;
+  --bg4:   #181D1A;
+  --green: #00FF88;
+  --gdim:  rgba(0,255,136,0.08);
+  --gmid:  rgba(0,255,136,0.18);
+  --glow:  0 0 28px rgba(0,255,136,0.28);
+  --white: #E2E8E2;
+  --dim:   rgba(226,232,226,0.42);
+  --faint: rgba(226,232,226,0.06);
+  --line:  rgba(226,232,226,0.08);
+  --lineG: rgba(0,255,136,0.18);
+  --red:   #FF4444;
+  --amber: #FFB020;
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body{
+  font-family:'Geist Mono','IBM Plex Mono',monospace;
+  background:var(--bg);
+  color:var(--white);
+  overflow-x:hidden;
+}
+
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.04) 3px,rgba(0,0,0,0.04) 4px);
+  pointer-events:none;z-index:500;
+}
+
+/* ── FLOATING ICONS ── */
+.comex-icons{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.ci{position:absolute;animation:float 8s ease-in-out infinite;}
+.ci:nth-child(1){top:12%;right:7%;animation-delay:0s;}
+.ci:nth-child(2){top:52%;right:16%;animation-delay:2s;}
+.ci:nth-child(3){top:26%;right:30%;animation-delay:4s;}
+.ci:nth-child(4){top:68%;right:4%;animation-delay:1s;}
+.ci:nth-child(5){top:8%;right:50%;animation-delay:3s;}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0deg);}33%{transform:translateY(-14px) rotate(2deg);}66%{transform:translateY(-6px) rotate(-1deg);}}
+
+/* ── NAV ── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 56px;height:64px;
+  position:sticky;top:0;z-index:200;
+  background:rgba(9,12,10,0.9);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--lineG);
+}
+
+.logo{
+  font-size:.95rem;font-weight:600;letter-spacing:.06em;
+  color:var(--white);text-decoration:none;
+  display:flex;align-items:center;gap:10px;
+}
+
+.logo-pip{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--green);box-shadow:var(--glow);
+  animation:pip 2s ease-in-out infinite;
+}
+
+@keyframes pip{0%,100%{opacity:1}50%{opacity:.3}}
+
+.nav-mid{display:flex;gap:40px;list-style:none;}
+.nav-mid a{text-decoration:none;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);transition:color .2s;}
+.nav-mid a:hover{color:var(--white);}
+
+.nav-right{display:flex;gap:12px;align-items:center;}
+
+.btn-ghost{background:none;border:none;font-family:'Geist Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);cursor:pointer;padding:8px 16px;transition:color .2s;}
+.btn-ghost:hover{color:var(--white);}
+
+.btn-green{background:var(--green);color:var(--bg);border:none;font-family:'Geist Mono',monospace;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:10px 22px;cursor:pointer;transition:box-shadow .2s,transform .1s;}
+.btn-green:hover{box-shadow:var(--glow);transform:translateY(-1px);}
+
+/* ── HERO ── */
+.hero-wrap{max-width:1100px;margin:0 auto;padding:0 56px;border-left:1px solid var(--lineG);border-right:1px solid var(--lineG);}
+
+.hero{
+  min-height:calc(100vh - 64px);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:100px 0 80px;
+  position:relative;overflow:hidden;
+}
+
+.hero::before{
+  content:'';position:absolute;top:-300px;right:-200px;
+  width:700px;height:700px;
+  background:radial-gradient(circle,rgba(0,255,136,.05) 0%,transparent 60%);
+  pointer-events:none;
+}
+
+.hero-label{
+  font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--green);margin-bottom:40px;
+  display:flex;align-items:center;gap:12px;
+  animation:up .6s ease both;
+}
+.hero-label::before{content:'';width:28px;height:1px;background:var(--green);opacity:.6;}
+
+h1{
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(3.2rem,6.5vw,6rem);
+  line-height:1.0;letter-spacing:-.02em;font-weight:400;
+  max-width:800px;animation:up .7s ease .08s both;
+}
+h1 em{font-style:italic;color:var(--green);}
+h1 .muted{color:var(--dim);}
+
+.hero-sub{
+  margin-top:28px;font-size:.84rem;line-height:1.85;
+  color:var(--dim);max-width:460px;
+  animation:up .7s ease .16s both;
+}
+
+.hero-ctas{
+  display:flex;align-items:center;gap:24px;
+  margin-top:48px;animation:up .7s ease .24s both;
+}
+
+.cta-primary{
+  background:var(--green);color:var(--bg);border:none;
+  font-family:'Geist Mono',monospace;
+  font-size:.78rem;font-weight:600;letter-spacing:.08em;
+  padding:14px 32px;cursor:pointer;
+  transition:box-shadow .2s,transform .1s;
+}
+.cta-primary:hover{box-shadow:var(--glow);transform:translateY(-2px);}
+
+.cta-link{
+  background:none;border:none;
+  font-family:'Geist Mono',monospace;
+  font-size:.78rem;letter-spacing:.08em;
+  color:var(--dim);cursor:pointer;
+  display:flex;align-items:center;gap:8px;transition:color .2s;
+}
+.cta-link:hover{color:var(--white);}
+
+/* ── INLINE CALC ── */
+.hero-calc{
+  margin-top:72px;
+  border-top:1px solid var(--lineG);
+  border-bottom:1px solid var(--line);
+  animation:up .7s ease .32s both;
+}
+
+.calc-row{
+  display:grid;grid-template-columns:repeat(5,1fr) auto;
+  border-bottom:1px solid var(--line);
+}
+
+.cr-field{
+  padding:18px 20px;border-right:1px solid var(--line);
+  display:flex;flex-direction:column;gap:5px;transition:background .2s;
+}
+.cr-field:last-child{border-right:none;}
+.cr-field:focus-within{background:var(--gdim);}
+.cr-field:focus-within .cr-label{color:var(--green);}
+
+.cr-label{font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);transition:color .2s;}
+
+.cr-field input,.cr-field select{
+  background:none;border:none;
+  font-family:'Geist Mono',monospace;
+  font-size:.82rem;color:var(--white);outline:none;cursor:pointer;
+}
+.cr-field select option{background:var(--bg2);}
+
+.calc-btn-inline{
+  padding:0 28px;background:var(--green);color:var(--bg);
+  border:none;border-left:1px solid var(--lineG);
+  font-family:'Geist Mono',monospace;
+  font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  cursor:pointer;white-space:nowrap;transition:box-shadow .2s;
+}
+.calc-btn-inline:hover{box-shadow:var(--glow);}
+
+.calc-results{display:grid;grid-template-columns:repeat(6,1fr);}
+
+.cr-result{
+  padding:14px 20px;border-right:1px solid var(--line);
+  display:flex;flex-direction:column;gap:4px;
+}
+.cr-result:last-child{border-right:none;}
+
+.crr-label{font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);}
+.crr-val{font-size:.82rem;font-weight:500;}
+.crr-val.g{color:var(--green);}
+.crr-val.total{font-family:'Instrument Serif',serif;font-size:1.3rem;font-style:italic;color:var(--green);}
+
+/* ── ROUTES ── */
+.routes-section{
+  border-top:1px solid var(--lineG);border-bottom:1px solid var(--line);
+  padding:48px 56px;background:var(--bg2);
+}
+.routes-label{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--green);margin-bottom:24px;opacity:.7;}
+.routes-wrap{width:100%;max-width:900px;margin:0 auto;}
+#routesvg{width:100%;height:auto;display:block;}
+.routes-legend{display:flex;align-items:center;gap:28px;margin-top:20px;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
+.rl-item{display:flex;align-items:center;gap:8px;}
+.rl-dash{display:inline-block;width:24px;height:1px;}
+.rl-dash.air{background:rgba(0,255,136,.6);box-shadow:0 0 4px rgba(0,255,136,.4);}
+.rl-dash.sea{background:repeating-linear-gradient(90deg,rgba(0,255,136,.4) 0px,rgba(0,255,136,.4) 4px,transparent 4px,transparent 8px);height:2px;}
+.rl-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(0,255,136,.6);}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+
+.stat-cell{
+  padding:52px 48px;border-right:1px solid var(--line);
+  position:relative;transition:background .25s;
+}
+.stat-cell:last-child{border-right:none;}
+.stat-cell:hover{background:var(--faint);}
+.stat-cell::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--green);box-shadow:var(--glow);transform:scaleX(0);transform-origin:left;transition:transform .4s ease;}
+.stat-cell:hover::after{transform:scaleX(1);}
+
+.stat-n{font-family:'Instrument Serif',serif;font-size:3.8rem;font-style:italic;color:var(--white);line-height:1;display:block;}
+.stat-n em{color:var(--green);font-style:normal;}
+.stat-l{font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:10px;display:block;}
+
+/* ── SECTIONS ── */
+.section-full{padding:100px 0;border-top:1px solid var(--line);}
+
+.inner{padding:0 56px;max-width:1100px;margin:0 auto;}
+
+.eyebrow{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--green);margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.eyebrow::before{content:'//';color:var(--dim);font-size:.55rem;}
+
+.sh2{font-family:'Instrument Serif',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:400;line-height:1.1;letter-spacing:-.01em;}
+.sh2 em{font-style:italic;color:var(--green);}
+.sh2 .dim{color:var(--dim);}
+
+.sbody{font-size:.84rem;line-height:1.9;color:var(--dim);max-width:480px;margin-top:16px;}
+
+/* ── PROBLEM ── */
+.problem-top{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:end;margin-bottom:80px;}
+
+.problem-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);}
+
+.pc{background:var(--bg);padding:48px 40px;transition:background .25s;}
+.pc:hover{background:var(--bg2);}
+.pc-n{font-family:'Instrument Serif',serif;font-size:3.5rem;font-style:italic;color:var(--dim);line-height:1;margin-bottom:20px;transition:color .3s;}
+.pc:hover .pc-n{color:var(--green);}
+.pc-title{font-size:.85rem;font-weight:500;letter-spacing:.03em;margin-bottom:12px;}
+.pc-desc{font-size:.76rem;line-height:1.85;color:var(--dim);}
+
+/* ── HOW ── */
+.how-inner{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:start;}
+
+.steps{margin-top:48px;display:flex;flex-direction:column;}
+
+.step{display:grid;grid-template-columns:48px 1fr;gap:20px;padding:28px 0;border-bottom:1px solid var(--line);transition:padding-left .25s;}
+.step:last-child{border-bottom:none;}
+.step:hover{padding-left:12px;}
+.step-n{font-family:'Instrument Serif',serif;font-size:2rem;font-style:italic;color:var(--lineG);line-height:1;padding-top:2px;transition:color .25s;}
+.step:hover .step-n{color:var(--green);}
+.step h4{font-size:.85rem;font-weight:500;margin-bottom:8px;}
+.step p{font-size:.76rem;line-height:1.85;color:var(--dim);}
+
+.out-panel{border:1px solid var(--lineG);background:var(--bg2);box-shadow:0 0 60px rgba(0,255,136,.06);position:relative;overflow:hidden;margin-top:48px;}
+.out-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--green),transparent);}
+.out-panel::after{content:'';position:absolute;left:0;right:0;height:80px;background:linear-gradient(180deg,transparent,rgba(0,255,136,.02),transparent);animation:scan 5s linear infinite;pointer-events:none;}
+@keyframes scan{from{top:-80px}to{top:100%}}
+
+.op-head{padding:12px 20px;border-bottom:1px solid var(--lineG);font-size:.6rem;letter-spacing:.15em;color:var(--green);display:flex;justify-content:space-between;}
+.op-head span{color:var(--dim);}
+.op-body{padding:20px;}
+.op-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(226,232,226,.04);font-size:.72rem;}
+.op-row:last-of-type{border-bottom:none;}
+.op-k{color:var(--dim);}
+.op-v.g{color:var(--green);}
+.op-total{margin:16px 0 0;padding:16px 20px;background:var(--gdim);border:1px solid var(--lineG);display:flex;justify-content:space-between;align-items:center;}
+.op-total-label{font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);}
+.op-total-val{font-family:'Instrument Serif',serif;font-size:1.8rem;font-style:italic;color:var(--green);}
+
+/* ── PRICING ── */
+.pricing-section{padding:100px 0;border-top:1px solid var(--line);}
+
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--lineG);margin-top:64px;}
+
+.plan{
+  background:var(--bg);padding:48px 40px;
+  position:relative;overflow:hidden;
+  transition:background .25s;
+}
+
+.plan:hover{background:var(--bg2);}
+
+.plan.featured{background:var(--bg2);}
+
+.plan.featured::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--green);box-shadow:var(--glow);
+}
+
+.plan-badge{
+  display:inline-block;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--green);border:1px solid var(--lineG);
+  padding:4px 12px;margin-bottom:20px;
+}
+
+.plan-name{font-family:'Instrument Serif',serif;font-size:1.6rem;font-style:italic;margin-bottom:8px;}
+
+.plan-price{
+  font-family:'Instrument Serif',serif;
+  font-size:3rem;font-style:italic;color:var(--green);
+  line-height:1;margin-bottom:4px;
+}
+
+.plan-price span{font-size:1.2rem;color:var(--dim);font-style:normal;}
+
+.plan-billing{font-size:.65rem;letter-spacing:.1em;color:var(--dim);margin-bottom:32px;text-transform:uppercase;}
+
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:36px;}
+
+.plan-features li{
+  font-size:.76rem;line-height:1.6;color:var(--dim);
+  display:flex;align-items:flex-start;gap:10px;
+}
+
+.plan-features li::before{content:'→';color:var(--green);flex-shrink:0;}
+.plan-features li.dim::before{color:var(--dim);}
+.plan-features li.dim{opacity:.5;}
+
+.plan-btn{
+  width:100%;padding:12px;border:1px solid var(--lineG);
+  background:none;color:var(--white);
+  font-family:'Geist Mono',monospace;font-size:.7rem;
+  font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  cursor:pointer;transition:background .2s,color .2s;
+}
+.plan-btn:hover{background:var(--gdim);}
+.plan-btn.featured-btn{background:var(--green);color:var(--bg);border-color:var(--green);}
+.plan-btn.featured-btn:hover{box-shadow:var(--glow);}
+
+/* ── EARLY ACCESS FORM ── */
+.access-section{
+  padding:100px 0;border-top:1px solid var(--line);
+  position:relative;overflow:hidden;
+}
+
+.access-section::before{
+  content:'';position:absolute;bottom:-200px;left:50%;transform:translateX(-50%);
+  width:800px;height:600px;
+  background:radial-gradient(circle,rgba(0,255,136,.05) 0%,transparent 60%);
+  pointer-events:none;
+}
+
+.access-inner{
+  max-width:560px;margin:0 auto;text-align:center;
+  padding:0 56px;position:relative;z-index:1;
+}
+
+.access-inner .sh2{font-size:clamp(2rem,4vw,3rem);margin-bottom:16px;}
+.access-inner .sbody{margin:0 auto 48px;text-align:center;max-width:420px;}
+
+.access-form{display:flex;flex-direction:column;gap:12px;}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+.form-field{display:flex;flex-direction:column;gap:6px;}
+.form-field label{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);}
+.form-field input,.form-field select{
+  background:var(--bg2);border:1px solid var(--lineG);
+  color:var(--white);font-family:'Geist Mono',monospace;
+  font-size:.78rem;padding:12px 16px;outline:none;
+  transition:border-color .2s;
+}
+.form-field input:focus,.form-field select:focus{border-color:var(--green);}
+.form-field select option{background:var(--bg2);}
+
+.form-submit{
+  margin-top:8px;padding:14px;
+  background:var(--green);color:var(--bg);border:none;
+  font-family:'Geist Mono',monospace;
+  font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  cursor:pointer;transition:box-shadow .2s,transform .1s;
+}
+.form-submit:hover{box-shadow:var(--glow);transform:translateY(-1px);}
+
+.form-note{font-size:.65rem;color:var(--dim);text-align:center;margin-top:12px;letter-spacing:.04em;}
+
+.form-success{
+  display:none;
+  border:1px solid var(--lineG);
+  background:var(--gdim);
+  padding:32px;text-align:center;
+}
+
+.form-success .success-icon{font-size:2rem;margin-bottom:16px;display:block;}
+.form-success h4{font-family:'Instrument Serif',serif;font-size:1.4rem;font-style:italic;color:var(--green);margin-bottom:8px;}
+.form-success p{font-size:.78rem;color:var(--dim);line-height:1.7;}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--line);padding:60px 56px 40px;}
+
+.footer-inner{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;
+  padding-bottom:48px;border-bottom:1px solid var(--line);
+}
+
+.footer-brand p{font-size:.76rem;line-height:1.85;color:var(--dim);max-width:260px;margin-top:14px;}
+
+.footer-col h5{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:20px;}
+.footer-col ul{list-style:none;}
+.footer-col ul li{margin-bottom:10px;}
+.footer-col ul li a{text-decoration:none;color:var(--dim);font-size:.76rem;transition:color .2s;}
+.footer-col ul li a:hover{color:var(--green);}
+
+.footer-bottom{max-width:1100px;margin:32px auto 0;display:flex;justify-content:space-between;align-items:center;}
+.footer-bottom p{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
+.footer-status{display:flex;align-items:center;gap:8px;font-size:.62rem;color:var(--green);letter-spacing:.1em;}
+
+/* ── ANIMATIONS ── */
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .65s ease,transform .65s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.r1{transition-delay:.1s}.r2{transition-delay:.2s}.r3{transition-delay:.3s}.r4{transition-delay:.4s}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo"><span class="logo-pip"></span>LandComex</a>
+  <ul class="nav-mid">
+    <li><a href="#como">Cómo funciona</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#acceso">Acceso anticipado</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="btn-ghost">Ingresar</button>
+    <button class="btn-green" onclick="document.getElementById('acceso').scrollIntoView({behavior:'smooth'})">Quiero acceso →</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero-wrap">
+<section class="hero">
+  <div class="comex-icons">
+    <div class="ci">
+      <svg width="68" height="50" viewBox="0 0 68 50" fill="none"><rect x="6" y="26" width="56" height="14" rx="2" fill="#00FF88" opacity=".08"/><rect x="12" y="16" width="12" height="10" rx="1" fill="#00FF88" opacity=".08"/><rect x="26" y="12" width="12" height="14" rx="1" fill="#00FF88" opacity=".08"/><rect x="40" y="18" width="10" height="8" rx="1" fill="#00FF88" opacity=".08"/><path d="M2 40 Q34 52 66 40" stroke="#00FF88" stroke-width="1.5" fill="none" opacity=".08"/></svg>
+    </div>
+    <div class="ci">
+      <svg width="52" height="32" viewBox="0 0 52 32" fill="none"><path d="M6 16 L38 6 Q48 4 46 12 Q44 16 34 18 L44 28 L38 26 L26 16 L10 20 L14 28 L6 26 L2 16 Z" fill="#00FF88" opacity=".07"/></svg>
+    </div>
+    <div class="ci">
+      <svg width="44" height="38" viewBox="0 0 44 38" fill="none"><rect x="2" y="6" width="40" height="26" rx="1" stroke="#00FF88" stroke-width="1.2" fill="none" opacity=".07"/><line x1="10" y1="6" x2="10" y2="32" stroke="#00FF88" stroke-width=".8" opacity=".07"/><line x1="18" y1="6" x2="18" y2="32" stroke="#00FF88" stroke-width=".8" opacity=".07"/><line x1="26" y1="6" x2="26" y2="32" stroke="#00FF88" stroke-width=".8" opacity=".07"/><line x1="34" y1="6" x2="34" y2="32" stroke="#00FF88" stroke-width=".8" opacity=".07"/></svg>
+    </div>
+    <div class="ci">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="#00FF88" stroke-width="1" fill="none" opacity=".07"/><ellipse cx="24" cy="24" rx="9" ry="20" stroke="#00FF88" stroke-width=".8" fill="none" opacity=".07"/><line x1="4" y1="24" x2="44" y2="24" stroke="#00FF88" stroke-width=".8" opacity=".07"/></svg>
+    </div>
+    <div class="ci">
+      <svg width="52" height="34" viewBox="0 0 52 34" fill="none"><rect x="2" y="8" width="32" height="18" rx="1" stroke="#00FF88" stroke-width="1" fill="none" opacity=".07"/><path d="M34 12 L46 12 L50 20 L50 26 L34 26 Z" stroke="#00FF88" stroke-width="1" fill="none" opacity=".07"/><circle cx="10" cy="28" r="4" stroke="#00FF88" stroke-width="1" fill="none" opacity=".07"/><circle cx="40" cy="28" r="4" stroke="#00FF88" stroke-width="1" fill="none" opacity=".07"/></svg>
+    </div>
+  </div>
+
+  <div class="hero-label">Calculadora de costos de importación · Argentina</div>
+
+  <h1>
+    El costo real<br>
+    de importar, <em>en segundos.</em><br>
+    <span class="muted">Sin Excel. Sin sorpresas.</span>
+  </h1>
+
+  <p class="hero-sub">
+    Ingresás NCM, origen y FOB. LandComex calcula todos los tributos con las alícuotas del día y te devuelve el landed cost exacto — en USD y ARS. Para importadores de cualquier industria, desde la primera impo.
+  </p>
+
+  <div class="hero-ctas">
+    <button class="cta-primary" onclick="document.getElementById('acceso').scrollIntoView({behavior:'smooth'})">Quiero acceso anticipado →</button>
+    <button class="cta-link" onclick="document.getElementById('como').scrollIntoView({behavior:'smooth'})">Ver cómo funciona ↓</button>
+  </div>
+
+  <div class="hero-calc">
+    <div class="calc-row">
+      <div class="cr-field">
+        <span class="cr-label">NCM</span>
+        <input type="text" value="8413.70.99" placeholder="ej. 8413.70.99">
+      </div>
+      <div class="cr-field">
+        <span class="cr-label">País origen</span>
+        <select>
+          <option>China (CN)</option>
+          <option>EE.UU. (US)</option>
+          <option>Alemania (DE)</option>
+          <option>Brasil (BR)</option>
+          <option>Italia (IT)</option>
+        </select>
+      </div>
+      <div class="cr-field">
+        <span class="cr-label">FOB</span>
+        <input type="text" value="USD 12.500">
+      </div>
+      <div class="cr-field">
+        <span class="cr-label">Tipo de carga</span>
+        <select>
+          <option>LCL — Suelta</option>
+          <option>FCL 20'</option>
+          <option>FCL 40'</option>
+          <option>Courier / DHL</option>
+        </select>
+      </div>
+      <div class="cr-field">
+        <span class="cr-label">Incoterm</span>
+        <select>
+          <option>FOB</option>
+          <option>CIF</option>
+          <option>EXW</option>
+        </select>
+      </div>
+      <button class="calc-btn-inline">Calcular →</button>
+    </div>
+    <div class="calc-results">
+      <div class="cr-result"><span class="crr-label">Derechos (14%)</span><span class="crr-val">USD 1.750</span></div>
+      <div class="cr-result"><span class="crr-label">IVA + adicional</span><span class="crr-val">USD 4.410</span></div>
+      <div class="cr-result"><span class="crr-label">Estadística</span><span class="crr-val">USD 375</span></div>
+      <div class="cr-result"><span class="crr-label">Ganancias</span><span class="crr-val">USD 750</span></div>
+      <div class="cr-result"><span class="crr-label">Flete LCL</span><span class="crr-val g">USD 680</span></div>
+      <div class="cr-result"><span class="crr-label">Total landed</span><span class="crr-val total">USD 19.465</span></div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ROUTES -->
+<div class="routes-section">
+  <div class="routes-label">// rutas comerciales activas</div>
+  <div class="routes-wrap">
+    <svg id="routesvg" viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+        <circle cx="20" cy="20" r="1" fill="rgba(0,255,136,0.07)"/>
+      </pattern>
+      <rect width="900" height="260" fill="url(#dots)"/>
+      <path id="r1" d="M780 60 Q560 -20 200 170" fill="none" stroke="rgba(0,255,136,0.3)" stroke-width="1.2" stroke-dasharray="6 4"/>
+      <path id="r2" d="M100 80 Q140 100 200 170" fill="none" stroke="rgba(0,255,136,0.25)" stroke-width="1" stroke-dasharray="5 4"/>
+      <path id="r3" d="M490 50 Q380 60 200 170" fill="none" stroke="rgba(0,255,136,0.2)" stroke-width="1" stroke-dasharray="5 4"/>
+      <path id="r4" d="M450 75 Q380 160 200 180" fill="none" stroke="rgba(0,255,136,0.18)" stroke-width="1.2" stroke-dasharray="3 6"/>
+      <path id="r5" d="M720 100 Q500 180 200 180" fill="none" stroke="rgba(0,255,136,0.15)" stroke-width="1" stroke-dasharray="3 5"/>
+      <!-- BA -->
+      <circle cx="200" cy="175" r="7" fill="#00FF88" opacity=".9"/>
+      <circle cx="200" cy="175" r="14" fill="none" stroke="rgba(0,255,136,0.4)" stroke-width="1"><animate attributeName="r" values="10;22;10" dur="2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0;0.7" dur="2.5s" repeatCount="indefinite"/></circle>
+      <circle cx="200" cy="175" r="22" fill="none" stroke="rgba(0,255,136,0.15)" stroke-width=".8"><animate attributeName="r" values="18;34;18" dur="2.5s" begin=".4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0;0.4" dur="2.5s" begin=".4s" repeatCount="indefinite"/></circle>
+      <text x="215" y="172" fill="#00FF88" font-size="9" font-family="monospace" font-weight="600" letter-spacing=".1em">BUENOS AIRES</text>
+      <text x="215" y="184" fill="rgba(0,255,136,0.5)" font-size="7" font-family="monospace" letter-spacing=".08em">ARG · DESTINO</text>
+      <!-- Shanghai -->
+      <circle cx="780" cy="60" r="5" fill="rgba(0,255,136,0.8)"/><circle cx="780" cy="60" r="10" fill="none" stroke="rgba(0,255,136,0.25)" stroke-width="1"><animate attributeName="r" values="7;16;7" dur="3.2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.5;0;0.5" dur="3.2s" repeatCount="indefinite"/></circle>
+      <text x="792" y="56" fill="rgba(0,255,136,0.75)" font-size="8" font-family="monospace" letter-spacing=".1em">SHANGHAI</text>
+      <text x="792" y="66" fill="rgba(0,255,136,0.4)" font-size="6.5" font-family="monospace">CN · ✈ 22h</text>
+      <!-- Frankfurt -->
+      <circle cx="490" cy="50" r="4" fill="rgba(0,255,136,0.7)"/><circle cx="490" cy="50" r="9" fill="none" stroke="rgba(0,255,136,0.2)" stroke-width="1"><animate attributeName="r" values="6;14;6" dur="3.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.5;0;0.5" dur="3.8s" repeatCount="indefinite"/></circle>
+      <text x="500" y="46" fill="rgba(0,255,136,0.7)" font-size="8" font-family="monospace" letter-spacing=".1em">FRANKFURT</text>
+      <text x="500" y="57" fill="rgba(0,255,136,0.4)" font-size="6.5" font-family="monospace">DE · ✈ 14h</text>
+      <!-- Rotterdam -->
+      <circle cx="450" cy="75" r="4" fill="rgba(0,255,136,0.6)"/><circle cx="450" cy="75" r="9" fill="none" stroke="rgba(0,255,136,0.2)" stroke-width="1"><animate attributeName="r" values="6;13;6" dur="4.1s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0;0.4" dur="4.1s" repeatCount="indefinite"/></circle>
+      <text x="460" y="71" fill="rgba(0,255,136,0.65)" font-size="8" font-family="monospace" letter-spacing=".1em">ROTTERDAM</text>
+      <text x="460" y="82" fill="rgba(0,255,136,0.4)" font-size="6.5" font-family="monospace">NL · 🚢 28d</text>
+      <!-- Miami -->
+      <circle cx="100" cy="80" r="4" fill="rgba(0,255,136,0.65)"/><circle cx="100" cy="80" r="9" fill="none" stroke="rgba(0,255,136,0.2)" stroke-width="1"><animate attributeName="r" values="6;13;6" dur="3.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0;0.4" dur="3.5s" repeatCount="indefinite"/></circle>
+      <text x="112" y="76" fill="rgba(0,255,136,0.65)" font-size="8" font-family="monospace" letter-spacing=".1em">MIAMI</text>
+      <text x="112" y="87" fill="rgba(0,255,136,0.4)" font-size="6.5" font-family="monospace">US · ✈ 9h</text>
+      <!-- Shenzhen -->
+      <circle cx="720" cy="100" r="3.5" fill="rgba(0,255,136,0.5)"/>
+      <text x="730" y="97" fill="rgba(0,255,136,0.55)" font-size="7.5" font-family="monospace" letter-spacing=".1em">SHENZHEN</text>
+      <text x="730" y="107" fill="rgba(0,255,136,0.35)" font-size="6.5" font-family="monospace">CN · 🚢 35d</text>
+      <!-- Planes -->
+      <g opacity=".85"><animateMotion dur="11s" repeatCount="indefinite" rotate="auto" begin="0s"><mpath href="#r1"/></animateMotion><g transform="rotate(180)"><path d="M-9,0 L5,-4 Q2,0 5,4 Z" fill="#00FF88"/><line x1="-1" y1="-4" x2="4" y2="-4" stroke="#00FF88" stroke-width="1.2" opacity=".8"/><line x1="-1" y1="4" x2="4" y2="4" stroke="#00FF88" stroke-width="1.2" opacity=".8"/></g></g>
+      <g opacity=".7"><animateMotion dur="9s" repeatCount="indefinite" rotate="auto" begin="3s"><mpath href="#r3"/></animateMotion><g transform="rotate(180)"><path d="M-8,0 L4,-3.5 Q1.5,0 4,3.5 Z" fill="#00FF88"/><line x1="-1" y1="-3.5" x2="3.5" y2="-3.5" stroke="#00FF88" stroke-width="1" opacity=".7"/><line x1="-1" y1="3.5" x2="3.5" y2="3.5" stroke="#00FF88" stroke-width="1" opacity=".7"/></g></g>
+      <g opacity=".65"><animateMotion dur="7s" repeatCount="indefinite" rotate="auto" begin="5s"><mpath href="#r2"/></animateMotion><g transform="rotate(180)"><path d="M-7,0 L4,-3 Q1.5,0 4,3 Z" fill="#00FF88"/><line x1="0" y1="-3" x2="3" y2="-3" stroke="#00FF88" stroke-width="1" opacity=".6"/><line x1="0" y1="3" x2="3" y2="3" stroke="#00FF88" stroke-width="1" opacity=".6"/></g></g>
+      <!-- Ships -->
+      <g opacity=".75"><animateMotion dur="22s" repeatCount="indefinite" rotate="auto" begin="0s"><mpath href="#r4"/></animateMotion><path d="M-9,-3 L7,-3 L10,0 L7,3 L-9,3 Z" fill="#00FF88"/><rect x="-6" y="-6" width="4" height="3" rx=".5" fill="#00FF88" opacity=".8"/><rect x="-1" y="-7" width="4" height="4" rx=".5" fill="#00FF88" opacity=".8"/></g>
+      <g opacity=".6"><animateMotion dur="32s" repeatCount="indefinite" rotate="auto" begin="8s"><mpath href="#r5"/></animateMotion><path d="M-8,-2.5 L6,-2.5 L9,0 L6,2.5 L-8,2.5 Z" fill="#00FF88"/><rect x="-5" y="-5.5" width="3" height="3" rx=".5" fill="#00FF88" opacity=".7"/><rect x="-1" y="-6" width="3" height="3.5" rx=".5" fill="#00FF88" opacity=".7"/></g>
+    </svg>
+    <div class="routes-legend">
+      <div class="rl-item"><span class="rl-dash air"></span>Ruta aérea</div>
+      <div class="rl-item"><span class="rl-dash sea"></span>Ruta marítima</div>
+      <div class="rl-item"><span class="rl-dot"></span>Buenos Aires — destino</div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-cell reveal"><span class="stat-n"><em>8</em>+</span><span class="stat-l">Tributos calculados automáticamente</span></div>
+  <div class="stat-cell reveal r1"><span class="stat-n">~<em>30</em>s</span><span class="stat-l">Vs. horas en Excel manual</span></div>
+  <div class="stat-cell reveal r2"><span class="stat-n"><em>10K</em></span><span class="stat-l">Posiciones NCM disponibles</span></div>
+  <div class="stat-cell reveal r3"><span class="stat-n"><em>24</em>h</span><span class="stat-l">Actualización de alícuotas</span></div>
+</div>
+
+<!-- PROBLEM -->
+<div class="section-full" id="problema">
+  <div class="inner">
+    <div class="problem-top">
+      <div>
+        <div class="eyebrow reveal">El problema que resolvemos</div>
+        <h2 class="sh2 reveal r1">Importar en Argentina<br>tiene costos <em>ocultos.</em></h2>
+      </div>
+      <p class="sbody reveal r2">Retail, fashion, oil & gas, biotech — el dolor es siempre el mismo. Ocho tributos distintos, alícuotas que cambian, y sin una herramienta precisa las pymes subestiman el landed cost en un 30% en promedio. Si estás haciendo tu primera importación, ni siquiera sabés por dónde empezar.</p>
+    </div>
+    <div class="problem-cards">
+      <div class="pc reveal">
+        <div class="pc-n">30%</div>
+        <h3 class="pc-title">Error promedio en estimaciones</h3>
+        <p class="pc-desc">Las pymes subestiman el landed cost en promedio un 30%. El resultado: operaciones que no cierran, márgenes destruidos y sorpresas al liquidar el despacho.</p>
+      </div>
+      <div class="pc reveal r1">
+        <div class="pc-n">3–5d</div>
+        <h3 class="pc-title">Tiempo de cálculo manual</h3>
+        <p class="pc-desc">Verificar alícuotas, consultar al despachante, actualizar el Excel. Días perdidos en cada operación que podrían ser 30 segundos.</p>
+      </div>
+      <div class="pc reveal r2">
+        <div class="pc-n">0</div>
+        <h3 class="pc-title">Herramientas para el que empieza</h3>
+        <p class="pc-desc">Si es tu primera importación, no tenés Excel ni despachante de confianza todavía. Tenés Google, una planilla en blanco, y muchas dudas.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW -->
+<div class="section-full" id="como">
+  <div class="inner">
+    <div class="how-inner">
+      <div>
+        <div class="eyebrow reveal">Cómo funciona</div>
+        <h2 class="sh2 reveal r1">Tres datos.<br>Un resultado <em>exacto.</em></h2>
+        <p class="sbody reveal r2">Diseñado para importadores de cualquier industria y cualquier nivel de experiencia. Sin jerga innecesaria, sin pasos de más.</p>
+        <div class="steps">
+          <div class="step reveal r1">
+            <span class="step-n">1</span>
+            <div><h4>Ingresás los datos base</h4><p>NCM, país de origen, valor FOB e incoterm. Si no tenés el código NCM, lo buscás por descripción del producto.</p></div>
+          </div>
+          <div class="step reveal r2">
+            <span class="step-n">2</span>
+            <div><h4>LandComex calcula todos los tributos</h4><p>Derechos, IVA, IVA adicional, estadística, ganancias anticipadas y más — con las alícuotas vigentes actualizadas cada 24 horas.</p></div>
+          </div>
+          <div class="step reveal r3">
+            <span class="step-n">3</span>
+            <div><h4>Recibís el breakdown completo</h4><p>Cada tributo desglosado, flete estimado y landed cost total en USD y ARS. Exportable a PDF para aprobar la operación o enviarle al proveedor.</p></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="out-panel reveal r1">
+          <div class="op-head"><span>// output · operación #0042</span><span>31.03.2026</span></div>
+          <div class="op-body">
+            <div class="op-row"><span class="op-k">NCM</span><span class="op-v g">8413.70.99</span></div>
+            <div class="op-row"><span class="op-k">Descripción</span><span class="op-v">Bombas para líquidos, ncop</span></div>
+            <div class="op-row"><span class="op-k">Origen</span><span class="op-v">China (CN)</span></div>
+            <div class="op-row"><span class="op-k">FOB declarado</span><span class="op-v">USD 12.500</span></div>
+            <div class="op-row"><span class="op-k">Derechos (14%)</span><span class="op-v">USD 1.750</span></div>
+            <div class="op-row"><span class="op-k">IVA + adicional</span><span class="op-v">USD 4.410</span></div>
+            <div class="op-row"><span class="op-k">Tasa estadística</span><span class="op-v">USD 375</span></div>
+            <div class="op-row"><span class="op-k">Ganancias anticip.</span><span class="op-v">USD 750</span></div>
+            <div class="op-row"><span class="op-k">Flete LCL estimado</span><span class="op-v">USD 680</span></div>
+            <div class="op-total">
+              <span class="op-total-label">Landed cost total</span>
+              <span class="op-total-val">USD 19.465</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="pricing-section section-full" id="pricing">
+  <div class="inner">
+    <div class="eyebrow reveal">Pricing</div>
+    <h2 class="sh2 reveal r1">Simple y <em>transparente.</em></h2>
+    <p class="sbody reveal r2">Empezá gratis. Escalá cuando lo necesites. Sin sorpresas — como debería ser con cualquier costo de importación.</p>
+    <div class="pricing-grid reveal r2">
+      <div class="plan">
+        <div class="plan-name">Explorador</div>
+        <div class="plan-price">$0<span>/mes</span></div>
+        <div class="plan-billing">Para empezar</div>
+        <ul class="plan-features">
+          <li>20 cálculos por mes</li>
+          <li>Todos los tributos desglosados</li>
+          <li>Búsqueda por descripción NCM</li>
+          <li class="dim">Exportar a PDF</li>
+          <li class="dim">Historial de operaciones</li>
+          <li class="dim">Alertas de cambio de alícuota</li>
+        </ul>
+        <button class="plan-btn" onclick="document.getElementById('acceso').scrollIntoView({behavior:'smooth'})">Empezar gratis</button>
+      </div>
+      <div class="plan featured">
+        <div class="plan-badge">Más popular</div>
+        <div class="plan-name">Operador</div>
+        <div class="plan-price">USD <span style="font-size:1.4rem;font-style:normal;color:var(--green)">29</span><span>/mes</span></div>
+        <div class="plan-billing">Para importadores activos</div>
+        <ul class="plan-features">
+          <li>Cálculos ilimitados</li>
+          <li>Todos los tributos desglosados</li>
+          <li>Búsqueda por descripción NCM</li>
+          <li>Exportar a PDF y Excel</li>
+          <li>Historial completo de operaciones</li>
+          <li>Alertas de cambio de alícuota</li>
+        </ul>
+        <button class="plan-btn featured-btn" onclick="document.getElementById('acceso').scrollIntoView({behavior:'smooth'})">Quiero acceso anticipado →</button>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Equipo</div>
+        <div class="plan-price">USD <span style="font-size:1.4rem;font-style:normal;color:var(--white)">79</span><span>/mes</span></div>
+        <div class="plan-billing">Para empresas y despachantes</div>
+        <ul class="plan-features">
+          <li>Todo lo del plan Operador</li>
+          <li>Hasta 5 usuarios</li>
+          <li>API access</li>
+          <li>Onboarding personalizado</li>
+          <li>Soporte prioritario</li>
+          <li>Factura A</li>
+        </ul>
+        <button class="plan-btn" onclick="document.getElementById('acceso').scrollIntoView({behavior:'smooth'})">Contactar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EARLY ACCESS -->
+<div class="access-section section-full" id="acceso">
+  <div class="access-inner">
+    <div class="eyebrow reveal" style="justify-content:center">Acceso anticipado</div>
+    <h2 class="sh2 reveal r1" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:16px;">Sé de los <em>primeros.</em></h2>
+    <p class="sbody reveal r2" style="text-align:center;margin:0 auto 40px;">LandComex está en desarrollo. Dejá tu mail y te avisamos cuando esté listo — con acceso anticipado gratuito por 3 meses.</p>
+
+    <div id="formWrap" class="reveal r3">
+      <form class="access-form" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <div class="form-field">
+            <label>Nombre</label>
+            <input type="text" placeholder="Tu nombre" required>
+          </div>
+          <div class="form-field">
+            <label>Email</label>
+            <input type="email" placeholder="tu@mail.com" required>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>¿En qué industria importás?</label>
+          <select>
+            <option value="">Seleccioná una opción</option>
+            <option>Retail / Comercio</option>
+            <option>Fashion / Textil</option>
+            <option>Biotech / Farma</option>
+            <option>Oil & Gas / Energía</option>
+            <option>Alimentos / Bebidas</option>
+            <option>Tecnología / Electrónica</option>
+            <option>Maquinaria / Industrial</option>
+            <option>Mi primera importación</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>¿Con qué frecuencia importás?</label>
+          <select>
+            <option value="">Seleccioná una opción</option>
+            <option>Es mi primera importación</option>
+            <option>1-5 operaciones por año</option>
+            <option>6-20 operaciones por año</option>
+            <option>Más de 20 por año</option>
+          </select>
+        </div>
+        <button type="submit" class="form-submit">Quiero acceso anticipado →</button>
+        <p class="form-note">Sin spam. Te avisamos cuando esté listo, nada más.</p>
+      </form>
+    </div>
+
+    <div id="formSuccess" class="form-success">
+      <span class="success-icon">✓</span>
+      <h4>¡Estás adentro!</h4>
+      <p>Te avisamos cuando LandComex esté listo.<br>Acceso anticipado gratuito por 3 meses, garantizado.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#" class="logo"><span class="logo-pip"></span>LandComex</a>
+      <p>Calculadora de landed cost para importadores argentinos. Construida desde adentro del sector — para cualquier industria, desde la primera impo.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Producto</h5>
+      <ul>
+        <li><a href="#">Calculadora</a></li>
+        <li><a href="#">NCM Lookup</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#">API</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Compañía</h5>
+      <ul>
+        <li><a href="#">Acerca de</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#acceso">Acceso anticipado</a></li>
+        <li><a href="#">Contacto</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Contacto</h5>
+      <ul>
+        <li><a href="/cdn-cgi/l/email-protection#620a0d0e03220e030c060b0f120d4c031212"><span class="__cf_email__" data-cfemail="375f585b56775b5659535e5a475819564747">[email&#160;protected]</span></a></li>
+        <li><a href="#">Buenos Aires 🇦🇷</a></li>
+        <li><a href="#">Twitter / X</a></li>
+        <li><a href="#">LinkedIn</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 LandComex</p>
+    <div class="footer-status"><span class="logo-pip"></span>En construcción · Acceso anticipado abierto</div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function handleSubmit(e) {
+  e.preventDefault();
+  document.getElementById('formWrap').style.display = 'none';
+  document.getElementById('formSuccess').style.display = 'block';
+}
+
+const obs = new IntersectionObserver(e
