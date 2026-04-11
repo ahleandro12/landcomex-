@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LandComex — El costo real de importar</title>
 <meta name="description" content="Calculadora de landed cost para importadores argentinos. NCM, origen y FOB. Todos los tributos desglosados con valores del día.">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@300;400;500;600&family=Fraunces:ital,wght@0,300;0,700;1,200;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;500;600&family=Fraunces:ital,wght@0,300;0,700;1,200;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#080A0C;--bg2:#0D1014;--bg3:#121519;--bg4:#181C21;
@@ -18,7 +18,7 @@
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{font-family:'IBM Plex Mono',monospace;background:var(--bg);color:var(--white);overflow-x:hidden;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);overflow-x:hidden;}
 
 /* ── NAV ── */
 nav{display:flex;align-items:stretch;height:60px;position:sticky;top:0;z-index:200;background:rgba(8,10,12,0.96);backdrop-filter:blur(20px);border-bottom:var(--lineB);}
@@ -29,13 +29,13 @@ nav{display:flex;align-items:stretch;height:60px;position:sticky;top:0;z-index:2
 .nav-links a{display:flex;align-items:center;height:60px;padding:0 24px;text-decoration:none;color:var(--wdim);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;transition:color .2s,background .2s;}
 .nav-links a:hover{color:var(--blue);background:var(--bdim);}
 .nav-actions{display:flex;}
-.nav-btn{height:60px;padding:0 28px;border:none;border-left:var(--line);background:none;font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--wdim);cursor:pointer;transition:color .2s,background .2s;}
+.nav-btn{height:60px;padding:0 28px;border:none;border-left:var(--line);background:none;font-family:'Inter',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--wdim);cursor:pointer;transition:color .2s,background .2s;}
 .nav-btn:hover{color:var(--blue);background:var(--bdim);}
 .nav-btn-primary{background:var(--blue);color:var(--bg);font-weight:600;border-left:var(--lineB);}
 .nav-btn-primary:hover{background:var(--blue2);}
 
 /* ── HERO ── */
-.hero{display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 60px);border-bottom:var(--lineB);position:relative;overflow:hidden;}
+.hero{display:grid;grid-template-columns:1fr 1fr;height:calc(100vh - 60px);border-bottom:var(--lineB);position:relative;overflow:hidden;}
 .hero::before{content:'';position:absolute;top:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(79,142,247,.04) 0%,transparent 65%);pointer-events:none;}
 .hero-left{padding:72px 60px;border-right:var(--lineB);display:flex;flex-direction:column;justify-content:space-between;position:relative;z-index:2;}
 .hero-tag{display:inline-flex;align-items:center;gap:10px;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--blue);margin-bottom:40px;}
@@ -44,9 +44,9 @@ nav{display:flex;align-items:stretch;height:60px;position:sticky;top:0;z-index:2
 .hero-h1 .stroke{-webkit-text-stroke:1.5px var(--white);color:transparent;display:block;}
 .hero-h1 .blue{color:var(--blue);display:block;}
 .hero-h1 .small{font-family:'Fraunces',serif;font-size:clamp(1.4rem,2vw,2.2rem);font-weight:300;font-style:italic;color:var(--wdim);text-transform:none;display:block;margin-top:12px;}
-.hero-sub{font-size:.82rem;line-height:1.85;color:var(--wdim);max-width:380px;margin-top:28px;}
+.hero-sub{font-size:.9rem;line-height:1.85;color:var(--wdim);max-width:380px;margin-top:28px;}
 .hero-bottom{display:flex;border-top:var(--lineB);margin-top:auto;}
-.hb-btn{flex:1;height:56px;border:none;border-right:var(--line);background:none;font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--wdim);cursor:pointer;transition:color .2s,background .2s;}
+.hb-btn{flex:1;height:56px;border:none;border-right:var(--line);background:none;font-family:'Inter',sans-serif;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--wdim);cursor:pointer;transition:color .2s,background .2s;}
 .hb-btn:hover{color:var(--blue);background:var(--bdim);}
 .hb-btn-blue{background:var(--blue);color:var(--bg);font-weight:600;border-right:none;}
 .hb-btn-blue:hover{background:var(--blue2);}
@@ -65,7 +65,7 @@ nav{display:flex;align-items:stretch;height:60px;position:sticky;top:0;z-index:2
 .cp-label{display:flex;align-items:center;padding:0 14px;border-right:var(--line);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--wdim);transition:color .2s;}
 .cp-field:focus-within{background:var(--bdim);}
 .cp-field:focus-within .cp-label{color:var(--blue);}
-.cp-field input,.cp-field select{border:none;background:transparent;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--white);padding:0 14px;outline:none;width:100%;}
+.cp-field input,.cp-field select{border:none;background:transparent;font-family:'Inter',sans-serif;font-size:.8rem;color:var(--white);padding:0 14px;outline:none;width:100%;}
 .cp-field select option{background:var(--bg2);}
 .cp-results{padding:14px 18px 6px;}
 .cp-section-label{font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--wdim);margin-bottom:10px;display:flex;align-items:center;gap:10px;}
@@ -81,11 +81,12 @@ nav{display:flex;align-items:stretch;height:60px;position:sticky;top:0;z-index:2
 .ct-val{font-family:'Archivo Black',sans-serif;font-size:1.7rem;letter-spacing:-.02em;color:var(--blue);}
 .ct-val span{font-size:1rem;opacity:.7;margin-right:4px;}
 .cp-cta{display:flex;border-top:var(--lineB);}
-.cp-cta-btn{flex:1;height:46px;border:none;font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s,color .2s;}
+.cp-cta-btn{flex:1;height:46px;border:none;font-family:'Inter',sans-serif;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s,color .2s;}
 .cp-cta-ghost{background:none;color:var(--wdim);border-right:var(--line);}
 .cp-cta-ghost:hover{background:var(--wfaint);color:var(--white);}
 .cp-cta-main{background:var(--blue);color:var(--bg);font-weight:600;}
 .cp-cta-main:hover{background:var(--blue2);}
+.cp-demo-note{font-size:.58rem;color:var(--wdim);padding:0 14px;display:flex;align-items:center;letter-spacing:.06em;}
 
 /* ── MARQUEE ── */
 .marquee-wrap{overflow:hidden;border-bottom:var(--line);padding:12px 0;background:var(--bg2);}
@@ -114,7 +115,7 @@ nav{display:flex;align-items:stretch;height:60px;position:sticky;top:0;z-index:2
 .section-h2{font-family:'Archivo Black',sans-serif;font-size:clamp(2rem,3.5vw,3rem);line-height:.95;letter-spacing:-.03em;text-transform:uppercase;}
 .section-h2 .stroke{-webkit-text-stroke:1.5px var(--white);color:transparent;}
 .section-h2 .blue{color:var(--blue);}
-.section-body{font-size:.82rem;line-height:1.85;color:var(--wdim);max-width:440px;margin-top:14px;}
+.section-body{font-size:.9rem;line-height:1.85;color:var(--wdim);max-width:440px;margin-top:14px;}
 .p-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:var(--lineB);}
 .p-card{padding:48px;border-right:var(--lineB);position:relative;transition:background .25s;}
 .p-card:last-child{border-right:none;}
@@ -122,7 +123,7 @@ nav{display:flex;align-items:stretch;height:60px;position:sticky;top:0;z-index:2
 .p-num{font-family:'Archivo Black',sans-serif;font-size:4rem;line-height:1;letter-spacing:-.04em;-webkit-text-stroke:1.5px rgba(79,142,247,.35);color:transparent;margin-bottom:18px;transition:color .3s,-webkit-text-stroke-color .3s;}
 .p-card:hover .p-num{color:var(--blue);-webkit-text-stroke-color:transparent;}
 .p-title{font-family:'Archivo Black',sans-serif;font-size:.9rem;text-transform:uppercase;margin-bottom:12px;}
-.p-desc{font-size:.76rem;line-height:1.85;color:var(--wdim);}
+.p-desc{font-size:.84rem;line-height:1.85;color:var(--wdim);}
 
 /* ── HOW ── */
 .how-section{display:grid;grid-template-columns:360px 1fr;border-bottom:var(--lineB);}
@@ -135,7 +136,7 @@ nav{display:flex;align-items:stretch;height:60px;position:sticky;top:0;z-index:2
 .how-step:hover .hs-num{color:var(--blue);}
 .hs-content{padding:28px 32px;}
 .hs-content h4{font-family:'Archivo Black',sans-serif;font-size:.85rem;text-transform:uppercase;margin-bottom:8px;}
-.hs-content p{font-size:.74rem;line-height:1.85;color:var(--wdim);}
+.hs-content p{font-size:.84rem;line-height:1.85;color:var(--wdim);}
 
 /* ── PRICING ── */
 .pricing-section{border-bottom:var(--lineB);}
@@ -149,14 +150,14 @@ nav{display:flex;align-items:stretch;height:60px;position:sticky;top:0;z-index:2
 .plan-badge{display:inline-block;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--blue);border:var(--lineB);padding:4px 10px;margin-bottom:18px;}
 .plan-name{font-family:'Fraunces',serif;font-size:1.5rem;font-style:italic;margin-bottom:8px;}
 .plan-price{font-family:'Archivo Black',sans-serif;font-size:2.6rem;line-height:1;color:var(--blue);margin-bottom:4px;letter-spacing:-.02em;}
-.plan-price span{font-size:.9rem;color:var(--wdim);font-family:'IBM Plex Mono',monospace;font-weight:300;}
+.plan-price span{font-size:.9rem;color:var(--wdim);font-family:'Inter',sans-serif;font-weight:300;}
 .plan-billing{font-size:.62rem;letter-spacing:.1em;color:var(--wdim);margin-bottom:28px;text-transform:uppercase;}
 .plan-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:32px;}
-.plan-features li{font-size:.74rem;line-height:1.6;color:var(--wdim);display:flex;align-items:flex-start;gap:10px;}
+.plan-features li{font-size:.82rem;line-height:1.6;color:var(--wdim);display:flex;align-items:flex-start;gap:10px;}
 .plan-features li::before{content:'→';color:var(--blue);flex-shrink:0;}
 .plan-features li.off::before{color:var(--wdim);}
 .plan-features li.off{opacity:.4;}
-.plan-btn{width:100%;padding:12px;border:var(--lineB);background:none;color:var(--white);font-family:'IBM Plex Mono',monospace;font-size:.68rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s;}
+.plan-btn{width:100%;padding:12px;border:var(--lineB);background:none;color:var(--white);font-family:'Inter',sans-serif;font-size:.68rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s;}
 .plan-btn:hover{background:var(--bdim);}
 .plan-btn.featured-btn{background:var(--blue);color:var(--bg);border-color:var(--blue);}
 .plan-btn.featured-btn:hover{background:var(--blue2);}
@@ -167,15 +168,15 @@ nav{display:flex;align-items:stretch;height:60px;position:sticky;top:0;z-index:2
 .access-inner{max-width:540px;margin:0 auto;text-align:center;padding:100px 40px;position:relative;z-index:1;}
 .access-h2{font-family:'Archivo Black',sans-serif;font-size:clamp(2rem,4vw,3rem);line-height:.95;letter-spacing:-.03em;text-transform:uppercase;margin-bottom:14px;}
 .access-h2 .blue{color:var(--blue);}
-.access-sub{font-size:.82rem;line-height:1.85;color:var(--wdim);margin:0 auto 40px;max-width:400px;}
+.access-sub{font-size:.9rem;line-height:1.85;color:var(--wdim);margin:0 auto 40px;max-width:400px;}
 .access-form{display:flex;flex-direction:column;gap:10px;text-align:left;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .form-field{display:flex;flex-direction:column;gap:6px;}
 .form-field label{font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--wdim);}
-.form-field input,.form-field select{background:var(--bg2);border:var(--lineB);color:var(--white);font-family:'IBM Plex Mono',monospace;font-size:.76rem;padding:11px 14px;outline:none;transition:border-color .2s;}
+.form-field input,.form-field select{background:var(--bg2);border:var(--lineB);color:var(--white);font-family:'Inter',sans-serif;font-size:.76rem;padding:11px 14px;outline:none;transition:border-color .2s;}
 .form-field input:focus,.form-field select:focus{border-color:var(--blue);}
 .form-field select option{background:var(--bg2);}
-.form-submit{margin-top:6px;padding:13px;background:var(--blue);color:var(--bg);border:none;font-family:'IBM Plex Mono',monospace;font-size:.76rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s;}
+.form-submit{margin-top:6px;padding:13px;background:var(--blue);color:var(--bg);border:none;font-family:'Inter',sans-serif;font-size:.76rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s;}
 .form-submit:hover{background:var(--blue2);}
 .form-note{font-size:.62rem;color:var(--wdim);text-align:center;margin-top:10px;}
 .form-success{display:none;border:var(--lineB);background:var(--bdim);padding:48px;text-align:center;}
@@ -194,7 +195,7 @@ nav{display:flex;align-items:stretch;height:60px;position:sticky;top:0;z-index:2
 .flow-step:hover .flow-n{color:var(--blue);-webkit-text-stroke-color:transparent;}
 .flow-icon{font-size:1.4rem;margin-bottom:16px;display:block;}
 .flow-title{font-family:'Archivo Black',sans-serif;font-size:.9rem;text-transform:uppercase;margin-bottom:12px;}
-.flow-desc{font-size:.74rem;line-height:1.85;color:var(--wdim);}
+.flow-desc{font-size:.84rem;line-height:1.85;color:var(--wdim);}
 .flow-tag{display:inline-block;margin-top:16px;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);border:var(--lineB);padding:4px 10px;}
 
 /* ── FOOTER ── */
@@ -203,7 +204,7 @@ footer{border-top:var(--lineB);}
 .fc{padding:52px 44px;border-right:var(--line);}
 .fc:last-child{border-right:none;}
 .footer-logo{font-family:'Archivo Black',sans-serif;font-size:1.1rem;color:var(--white);text-decoration:none;display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-.fc p{font-size:.74rem;line-height:1.85;color:var(--wdim);max-width:240px;}
+.fc p{font-size:.82rem;line-height:1.85;color:var(--wdim);max-width:240px;}
 .fc h5{font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--wdim);margin-bottom:18px;}
 .fc ul{list-style:none;}
 .fc ul li{margin-bottom:9px;}
@@ -220,6 +221,93 @@ footer{border-top:var(--lineB);}
 .reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;}
 .reveal.visible{opacity:1;transform:translateY(0);}
 .rd1{transition-delay:.1s}.rd2{transition-delay:.2s}.rd3{transition-delay:.3s}.rd4{transition-delay:.4s}
+
+/* ── RESPONSIVE MOBILE ── */
+@media(max-width:768px){
+
+  /* NAV */
+  nav{height:56px;padding:0;}
+  .nav-logo{padding:0 20px;font-size:.9rem;}
+  .nav-links{display:none;}
+  .nav-btn:not(.nav-btn-primary){display:none;}
+  .nav-btn-primary{padding:0 16px;font-size:.65rem;height:56px;}
+
+  /* HERO */
+  .hero{grid-template-columns:1fr;height:auto;min-height:auto;}
+  .hero-left{padding:48px 24px 32px;border-right:none;border-bottom:var(--lineB);}
+  .hero-tag{margin-bottom:24px;font-size:.58rem;}
+  .hero-h1{font-size:3.2rem;}
+  .hero-h1 .small{font-size:1.4rem;}
+  .hero-sub{font-size:.78rem;max-width:100%;margin-top:20px;}
+  .hero-bottom{margin-top:32px;}
+  .hb-btn{height:48px;font-size:.65rem;}
+  .hero-right{padding:32px 24px;border-top:none;}
+  .calc-panel{max-width:100%;}
+  .cp-field{grid-template-columns:110px 1fr;}
+  .cp-label{font-size:.55rem;padding:0 10px;}
+  .cp-field input,.cp-field select{font-size:.75rem;padding:0 10px;}
+  .ct-val{font-size:1.4rem;}
+
+  /* MARQUEE */
+  .marquee-wrap{padding:10px 0;}
+
+  /* STATS */
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .sg-cell{padding:28px 24px;border-right:var(--lineB);}
+  .sg-cell:nth-child(2){border-right:none;}
+  .sg-cell:nth-child(3){border-top:var(--lineB);border-right:var(--lineB);}
+  .sg-cell:nth-child(4){border-top:var(--lineB);border-right:none;}
+  .sg-num{font-size:2.4rem;}
+  .sg-label{font-size:.58rem;}
+
+  /* PROBLEM */
+  .prob-header{grid-template-columns:1fr;gap:24px;padding:48px 24px 40px;}
+  .p-grid{grid-template-columns:1fr;}
+  .p-card{padding:32px 24px;border-right:none;border-bottom:var(--lineB);}
+  .p-card:last-child{border-bottom:none;}
+  .p-num{font-size:3rem;}
+
+  /* HOW */
+  .how-section{grid-template-columns:1fr;}
+  .how-left{padding:48px 24px 40px;border-right:none;border-bottom:var(--lineB);}
+  .how-step{min-height:90px;}
+  .hs-num{font-size:1.3rem;}
+  .hs-content{padding:20px 24px;}
+  .hs-content h4{font-size:.8rem;}
+
+  /* FLOW */
+  .flow-header{padding:48px 24px 40px;}
+  .flow-grid{grid-template-columns:1fr;}
+  .flow-step{padding:32px 24px;border-right:none;border-bottom:var(--lineB);}
+  .flow-step:last-child{border-bottom:none;}
+  .flow-n{font-size:2.2rem;}
+
+  /* PRICING */
+  .pricing-header{padding:48px 24px 40px;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .plan{border-right:none;border-bottom:var(--lineB);padding:36px 24px;}
+  .plan:last-child{border-bottom:none;}
+
+  /* ACCESS */
+  .access-inner{padding:60px 24px;}
+  .access-h2{font-size:2rem;}
+  .form-row{grid-template-columns:1fr;}
+
+  /* CTA */
+  .cta-section{grid-template-columns:1fr;}
+  .cta-left{padding:48px 24px;border-right:none;border-bottom:var(--lineB);}
+  .cta-h2{font-size:2.4rem;}
+  .cta-right{padding:40px 24px;}
+
+  /* FOOTER */
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .fc{padding:36px 24px;}
+  .fc:first-child{grid-column:1/-1;}
+  .footer-bottom{padding:16px 24px;flex-direction:column;gap:8px;text-align:center;}
+
+  /* SECTION HEADINGS */
+  .section-h2{font-size:2rem;}
+}
 </style>
 </head>
 <body>
@@ -233,8 +321,7 @@ footer{border-top:var(--lineB);}
     <li><a href="#acceso">Acceso anticipado</a></li>
   </ul>
   <div class="nav-actions">
-    <button class="nav-btn">Ingresar</button>
-    <button class="nav-btn nav-btn-primary" onclick="document.getElementById('acceso').scrollIntoView({behavior:'smooth'})">Quiero acceso →</button>
+    <button class="nav-btn nav-btn-primary" onclick="window.location.href='landcomex-calc.html'">Calculá ahora gratis →</button>
   </div>
 </nav>
 
@@ -242,7 +329,7 @@ footer{border-top:var(--lineB);}
 <section class="hero">
   <div class="hero-left">
     <div>
-      <div class="hero-tag">Calculadora de costos de importación · Argentina</div>
+      <div class="hero-tag">Calculadora de landed cost · Argentina · Gratis</div>
       <h1 class="hero-h1">
         LANDED
         <span class="stroke">COST</span>
@@ -253,7 +340,7 @@ footer{border-top:var(--lineB);}
     </div>
     <div class="hero-bottom">
       <button class="hb-btn" onclick="document.getElementById('como').scrollIntoView({behavior:'smooth'})">Ver cómo funciona</button>
-      <button class="hb-btn hb-btn-blue" onclick="document.getElementById('acceso').scrollIntoView({behavior:'smooth'})">Quiero acceso →</button>
+      <button class="hb-btn hb-btn-blue" onclick="window.location.href='landcomex-calc.html'">Calculá gratis ahora →</button>
     </div>
   </div>
   <div class="hero-right">
@@ -283,8 +370,8 @@ footer{border-top:var(--lineB);}
         <span class="ct-val"><span>USD</span>19.465</span>
       </div>
       <div class="cp-cta">
-        <button class="cp-cta-btn cp-cta-ghost">Ver detalle</button>
-        <button class="cp-cta-btn cp-cta-main">Recalcular →</button>
+        <div class="cp-demo-note">← Esta es una simulación</div>
+        <button class="cp-cta-btn cp-cta-main" onclick="window.location.href='landcomex-calc.html'" style="flex:1">Calculá el tuyo gratis →</button>
       </div>
     </div>
   </div>
@@ -332,7 +419,7 @@ footer{border-top:var(--lineB);}
   <div class="p-grid">
     <div class="p-card reveal"><div class="p-num">30%</div><h3 class="p-title">Error en estimaciones</h3><p class="p-desc">Las pymes subestiman el landed cost en un 30% en promedio. El resultado: operaciones que no cierran y sorpresas al liquidar el despacho.</p></div>
     <div class="p-card reveal rd1"><div class="p-num">3–5d</div><h3 class="p-title">Cálculo manual</h3><p class="p-desc">Verificar alícuotas, consultar al despachante, actualizar el Excel. Días perdidos en cada operación que podrían resolverse en 30 segundos.</p></div>
-    <div class="p-card reveal rd2"><div class="p-num">0</div><h3 class="p-title">Herramientas para el que empieza</h3><p class="p-desc">Si es tu primera importación, no tenés Excel ni despachante de confianza todavía. Tenés Google, una planilla en blanco, y muchas dudas.</p></div>
+    <div class="p-card reveal rd2"><div class="p-num">1ª</div><h3 class="p-title">La primera impo es la más difícil</h3><p class="p-desc">Sin despachante de confianza ni Excel armado, la primera importación es un laberinto. LandComex te da claridad desde el primer cálculo.</p></div>
   </div>
 </section>
 
@@ -351,37 +438,6 @@ footer{border-top:var(--lineB);}
   </div>
 </section>
 
-<!-- FLOW PARA EL USUARIO (acceso anticipado) -->
-<section class="flow-section">
-  <div class="flow-header">
-    <div class="eyebrow reveal">¿Cómo funciona el acceso anticipado?</div>
-    <h2 class="section-h2 reveal rd1">EN <span class="blue">3 PASOS</span><br>YA ESTÁS USANDO<br>LANDCOMEX.</h2>
-    <p class="section-body reveal rd2">Te sumás hoy, accedés gratis por 3 meses, y ayudás a construir la herramienta con tu feedback real.</p>
-  </div>
-  <div class="flow-grid">
-    <div class="flow-step reveal">
-      <div class="flow-n">01</div>
-      <span class="flow-icon">📋</span>
-      <h4 class="flow-title">Completás el formulario</h4>
-      <p class="flow-desc">Dejás tu nombre, mail, industria y frecuencia de importación. Sin tarjeta de crédito, sin compromisos. Solo queremos saber quién sos y qué necesitás.</p>
-      <span class="flow-tag">2 minutos</span>
-    </div>
-    <div class="flow-step reveal rd1">
-      <div class="flow-n">02</div>
-      <span class="flow-icon">✉️</span>
-      <h4 class="flow-title">Te mandamos acceso cuando esté listo</h4>
-      <p class="flow-desc">Cuando LandComex esté disponible, recibís un mail con tu link de acceso. Sin filas, sin lista de espera — los que se anotaron primero tienen prioridad.</p>
-      <span class="flow-tag">Acceso prioritario</span>
-    </div>
-    <div class="flow-step reveal rd2">
-      <div class="flow-n">03</div>
-      <span class="flow-icon">🚀</span>
-      <h4 class="flow-title">3 meses gratis, después decidís</h4>
-      <p class="flow-desc">Usás la calculadora sin límites durante 3 meses. Después podés seguir con el plan gratuito (20 cálculos/mes) o pasarte al Operador por USD 15/mes.</p>
-      <span class="flow-tag">Sin costo</span>
-    </div>
-  </div>
-</section>
 
 <!-- PRICING -->
 <section class="pricing-section" id="pricing">
@@ -403,7 +459,7 @@ footer{border-top:var(--lineB);}
         <li class="off">Historial de operaciones</li>
         <li class="off">Alertas de alícuota</li>
       </ul>
-      <button class="plan-btn" onclick="document.getElementById('acceso').scrollIntoView({behavior:'smooth'})">Empezar gratis</button>
+      <button class="plan-btn" onclick="window.location.href='landcomex-calc.html'">Empezar gratis →</button>
     </div>
     <div class="plan featured reveal rd1">
       <div class="plan-badge">Más popular</div>
@@ -413,12 +469,12 @@ footer{border-top:var(--lineB);}
       <ul class="plan-features">
         <li>Cálculos ilimitados</li>
         <li>Todos los tributos desglosados</li>
-        <li>Búsqueda por descripción NCM</li>
-        <li>Exportar a PDF y Excel</li>
-        <li>Historial completo</li>
-        <li>Alertas de cambio de alícuota</li>
+        <li>Búsqueda NCM por descripción</li>
+        <li>Exportar resultado a PDF</li>
+        <li>Envío por mail incluido</li>
+        <li>Soporte por mail</li>
       </ul>
-      <button class="plan-btn featured-btn" onclick="document.getElementById('acceso').scrollIntoView({behavior:'smooth'})">Quiero acceso anticipado →</button>
+      <button class="plan-btn featured-btn" onclick="window.location.href='landcomex-calc.html'">Empezar gratis →</button>
     </div>
     <div class="plan reveal rd2">
       <div class="plan-name">Equipo</div>
@@ -432,7 +488,7 @@ footer{border-top:var(--lineB);}
         <li>Soporte prioritario</li>
         <li>Factura A</li>
       </ul>
-      <button class="plan-btn" onclick="document.getElementById('acceso').scrollIntoView({behavior:'smooth'})">Contactar</button>
+      <button class="plan-btn" onclick="window.location.href='mailto:hola@landcomex.app'">Contactar →</button>
     </div>
   </div>
 </section>
@@ -441,8 +497,8 @@ footer{border-top:var(--lineB);}
 <section class="access-section" id="acceso">
   <div class="access-inner">
     <div class="eyebrow reveal" style="justify-content:center">Acceso anticipado · Gratis</div>
-    <h2 class="access-h2 reveal rd1">SÉ DE LOS <span class="blue">PRIMEROS.</span></h2>
-    <p class="access-sub reveal rd2">LandComex está en construcción. Anotate y cuando esté listo accedés gratis por 3 meses — sin tarjeta, sin burocracia.</p>
+    <h2 class="access-h2 reveal rd1">PROBALO <span class="blue">GRATIS.</span></h2>
+    <p class="access-sub reveal rd2">La calculadora ya funciona. Anotate, te mandamos acceso completo y cuando lancemos las features premium las tenés gratis por 3 meses.</p>
     <div id="formWrap" class="reveal rd3">
       <form class="access-form" onsubmit="handleSubmit(event)">
         <div class="form-row">
@@ -494,7 +550,7 @@ footer{border-top:var(--lineB);}
     </div>
     <div class="fc"><h5>Producto</h5><ul><li><a href="#">Calculadora</a></li><li><a href="#">NCM Lookup</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#">API</a></li></ul></div>
     <div class="fc"><h5>Compañía</h5><ul><li><a href="#">Acerca de</a></li><li><a href="#">Blog COMEX</a></li><li><a href="#acceso">Acceso anticipado</a></li><li><a href="#">Contacto</a></li></ul></div>
-    <div class="fc"><h5>Contacto</h5><ul><li><a href="mailto:hola@landcomex.app">hola@landcomex.app</a></li><li><a href="#">Buenos Aires 🇦🇷</a></li><li><a href="#">LinkedIn</a></li><li><a href="#">Twitter / X</a></li></ul></div>
+    <div class="fc"><h5>Contacto</h5><ul><li><a href="/cdn-cgi/l/email-protection#9df5f2f1fcddf1fcf3f9fef2f0f8e5b3fceded"><span class="__cf_email__" data-cfemail="99f1f6f5f8d9f5f8f7fdfaf6f4fce1b7f8e9e9">[email&#160;protected]</span></a></li><li><a href="#">Buenos Aires 🇦🇷</a></li><li><a href="#">LinkedIn</a></li><li><a href="#">Twitter / X</a></li></ul></div>
   </div>
   <div class="footer-bottom">
     <p class="fb-copy">© 2025 LandComex — Buenos Aires 🇦🇷</p>
@@ -502,16 +558,10 @@ footer{border-top:var(--lineB);}
   </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 function handleSubmit(e) {
   e.preventDefault();
   document.getElementById('formWrap').style.display='none';
   document.getElementById('formSuccess').style.display='block';
 }
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
-},{threshold:.1});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-</script>
-</body>
-</html>
+const obs=new Intersect
